@@ -59,10 +59,11 @@
             height: 120px;
             margin: 0 auto 20px;
             background-image: url('https://raw.githubusercontent.com/juliahappylongevity/health-navigator-demo/main/health-navigator.png');
-            background-size: contain;
-            background-position: center top;
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
             background-color: white;
+            border-radius: 15px;
         }
 
         .stage h1 {
@@ -877,8 +878,19 @@
                     <strong>🎓 Why this works:</strong> ${rec.education}
                 </div>
                 
-                <div style="background: #fff5f5; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                <div style="background: #fff5f5; padding: 15px; border-radius: 10px; margin: 15px 0;">
                     <strong>🎯 Implementation tip:</strong> ${rec.tip}
+                </div>
+                
+                <div style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #4a90a4;">
+                    <strong>🛒 Don't have ${rec.supplement.toLowerCase()} at home?</strong>
+                    <p style="margin: 8px 0; font-size: 14px;">I recommend the glycinate form specifically because it's:</p>
+                    <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px;">
+                        <li>Highly bioavailable (absorbed better than other forms)</li>
+                        <li>Gentle on the stomach (less likely to cause digestive issues)</li>
+                        <li>Chelated form that crosses the blood-brain barrier effectively</li>
+                    </ul>
+                    <button class="btn btn-secondary" onclick="showSupplementLink()" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">View Recommended Product</button>
                 </div>
             `;
         }
