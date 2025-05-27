@@ -866,7 +866,7 @@
             
             <div style="margin-top: 20px;">
                 <button class="btn" onclick="restartDemo()">Try Different Path</button>
-                <button class="btn btn-secondary" onclick="showMoreInfo()">Learn More About Health Navigator</button>
+                <button class="btn btn-secondary" onclick="showPricing()">View Pricing</button>
             </div>
         </div>
     </div>
@@ -884,26 +884,7 @@
             hasSafetyRisk: false
         };
 
-        function handleSafetySelection(group, checkbox) {
-            const groupName = group === 'conditions' ? 'safety' : 'symptom';
-            const noneValue = group === 'conditions' ? 'none' : 'none_symptoms';
-            
-            if (checkbox.value === noneValue && checkbox.checked) {
-                // If "none" is selected, uncheck all others in this group
-                const otherCheckboxes = document.querySelectorAll(`#stage5 input[type="checkbox"]:not([value="${noneValue}"])`);
-                otherCheckboxes.forEach(cb => {
-                    if (cb.id.startsWith(groupName)) {
-                        cb.checked = false;
-                    }
-                });
-            } else if (checkbox.checked) {
-                // If any other option is selected, uncheck "none"
-                const noneCheckbox = document.querySelector(`#stage5 input[value="${noneValue}"]`);
-                if (noneCheckbox) {
-                    noneCheckbox.checked = false;
-                }
-            }
-        }
+        const behavioralProfiles = {
             science_seeker: {
                 badge: '🔬',
                 title: 'THE SCIENCE SEEKER',
@@ -1184,14 +1165,10 @@
             });
             
             userProfile.safetyFlags = safetyFlags;
-            
-            // Only show safety response for severe symptoms
-            const severeSymptoms = ['weight_loss', 'chest_pain', 'fainting'];
-            const hasSevereSymptoms = safetyFlags.some(flag => severeSymptoms.includes(flag));
-            userProfile.hasSafetyRisk = hasSevereSymptoms;
+            userProfile.hasSafetyRisk = safetyFlags.length > 0;
             
             setTimeout(() => {
-                if (hasSevereSymptoms) {
+                if (userProfile.hasSafetyRisk) {
                     showSafetyResponse();
                 } else {
                     nextStage();
@@ -1202,45 +1179,35 @@
         function showSafetyResponse() {
             document.getElementById('loadingSafety').style.display = 'none';
             
-            // Check for severe symptoms that require medical consultation
-            const severeSymptoms = ['weight_loss', 'chest_pain', 'fainting'];
-            const hasSevereSymptoms = userProfile.safetyFlags.some(flag => severeSymptoms.includes(flag));
-            
-            if (hasSevereSymptoms) {
-                const safetyResponse = `
-                    <div class="safety-alert">
-                        <h3>⚠️ Important Health Note</h3>
-                        <p>Based on your symptoms, I'd suggest discussing these with your healthcare provider alongside starting your energy protocol.</p>
-                        
-                        <p><strong>Things to mention:</strong></p>
-                        <p>• Persistent fatigue affecting daily life</p>
-                        <p>• The specific symptoms you mentioned</p>
-                        <p>• Interest in supplement support alongside medical care</p>
-                        
-                        <div style="background: #f0f8ff; padding: 12px; border-radius: 8px; margin: 10px 0;">
-                            <strong>💬 Quick conversation starter:</strong><br>
-                            <em>"I've been experiencing fatigue with [symptoms]. I'd like to start some gentle supplement support - are there any considerations I should know about?"</em>
-                        </div>
-                        
-                        <p><strong>Meanwhile, I can still help with:</strong></p>
-                        <p>• Safe, gentle supplement protocols</p>
-                        <p>• Sleep and energy optimization</p>
-                        <p>• Stress management approaches</p>
+            const safetyResponse = `
+                <div class="safety-alert">
+                    <h3>⚠️ Important Health Guidance</h3>
+                    <p>Based on your responses, I recommend discussing your fatigue with your healthcare provider before starting any supplement protocol.</p>
+                    
+                    <p><strong>Specifically mention to your doctor:</strong></p>
+                    <p>• Persistent fatigue affecting daily life for ${userProfile.impact >= 4 ? 'significant time' : 'some time'}</p>
+                    <p>• Interest in supplement support for energy</p>
+                    <p>• Request for blood work to check thyroid, B12, vitamin D, and iron</p>
+                    
+                    <div style="background: #f0f8ff; padding: 12px; border-radius: 8px; margin: 10px 0;">
+                        <strong>💬 Doctor Discussion Template:</strong><br>
+                        <em>"I've been experiencing significant fatigue that's affecting my work and daily life. I've tried various approaches without improvement. Should I have blood work to check thyroid, B12, vitamin D, and iron? Are there any medical causes we should rule out? Is it safe for me to try magnesium and B-complex supplements?"</em>
                     </div>
                     
-                    <button class="btn" onclick="nextStage()">Continue with Gentle Protocol</button>
-                `;
+                    <p><strong>What I can help with safely right now:</strong></p>
+                    <p>• Sleep hygiene techniques</p>
+                    <p>• Gentle stress management approaches</p>
+                    <p>• Nutrition timing strategies</p>
+                </div>
                 
-                document.getElementById('stage5').innerHTML = `
-                    <div class="health-navigator">⚕️</div>
-                    <h1>Gentle Approach</h1>
-                    ${safetyResponse}
-                `;
-            } else {
-                // Mild conditions - just adjust recommendations
-                userProfile.hasSafetyRisk = false; // Don't block, just adjust
-                nextStage();
-            }
+                <button class="btn" onclick="nextStage()">Continue with Safe Recommendations</button>
+            `;
+            
+            document.getElementById('stage5').innerHTML = `
+                <div class="health-navigator">⚕️</div>
+                <h1>Safety First</h1>
+                ${safetyResponse}
+            `;
         }
 
         function generateProfile() {
@@ -1302,7 +1269,7 @@
         function generatePersonalizedRecommendations(profileType) {
             const profile = behavioralProfiles[profileType];
             const isHighImpact = parseInt(userProfile.impact) >= 4;
-            const hasSafetyFlags = userProfile.safetyFlags.length > 0 && !userProfile.safetyFlags.includes('none') && !userProfile.safetyFlags.includes('none_symptoms');
+            const hasSafetyRisk = userProfile.hasSafetyRisk;
             
             let insight = '';
             if (isHighImpact) {
@@ -1313,59 +1280,49 @@
             
             let recommendationHTML = '';
             
-            // Generate recommendations with safety adjustments
-            let magnesiumDose = '200mg';
-            let magnesiumTiming = '30 minutes before bed';
-            let safetyNotes = '';
-            
-            // Adjust for conditions
-            if (userProfile.safetyFlags.includes('kidney')) {
-                magnesiumDose = '100mg (start low due to kidney consideration)';
-                safetyNotes += '<p><strong>💡 Kidney consideration:</strong> Starting with a lower dose and monitoring how you feel.</p>';
-            }
-            if (userProfile.safetyFlags.includes('diabetes')) {
-                safetyNotes += '<p><strong>💡 Diabetes note:</strong> Magnesium can support healthy blood sugar - monitor your levels as they may improve.</p>';
-            }
-            if (userProfile.safetyFlags.includes('heart')) {
-                magnesiumTiming = '2 hours away from heart medications';
-                safetyNotes += '<p><strong>💡 Heart medication:</strong> Taking magnesium separately from heart meds for optimal absorption.</p>';
-            }
-            
-            recommendationHTML = `
-                <div class="recommendation-card">
-                    <h3>💊 Your Foundation Protocol</h3>
-                    <p>${insight}</p>
-                    
-                    <p><strong>Primary Recommendation:</strong> Magnesium Glycinate ${magnesiumDose}</p>
-                    <p><strong>When:</strong> ${magnesiumTiming}</p>
-                    <p><strong>Why this form:</strong> Highly bioavailable, gentle on stomach, supports sleep and stress</p>
-                    
-                    ${safetyNotes}
-                    
-                    <div style="margin: 15px 0;">
-                        <strong>Evidence Strength:</strong>
-                        <div class="evidence-bar">
-                            <div class="evidence-fill" style="width: 85%"></div>
+            if (hasSafetyRisk) {
+                recommendationHTML = `
+                    <div class="recommendation-card">
+                        <h3>🛡️ Your Safe Starting Protocol</h3>
+                        <p>${insight}</p>
+                        <p><strong>Sleep Foundation:</strong> Sleep hygiene optimization</p>
+                        <p><strong>Stress Support:</strong> Gentle breathing techniques</p>
+                        <p><strong>Energy Timing:</strong> Meal timing for stable blood sugar</p>
+                        <div style="background: #f0f8ff; padding: 12px; border-radius: 8px; margin: 10px 0;">
+                            <strong>📋 After your doctor visit:</strong> I'll create a complete supplement protocol tailored to your safety needs and behavioral profile.
                         </div>
-                        <small>Based on multiple clinical studies</small>
                     </div>
-                    
-                    ${profileType === 'science_seeker' ? `
-                        <div style="background: #e6fffa; padding: 12px; border-radius: 8px; margin: 10px 0;">
-                            <strong>🎓 The Science:</strong> Magnesium regulates GABA neurotransmitter function and supports healthy cortisol rhythm. Studies show 200-400mg improves sleep latency by 15-20% within 5-7 days (Abbasi et al., 2012).
+                `;
+            } else {
+                recommendationHTML = `
+                    <div class="recommendation-card">
+                        <h3>💊 Your Foundation Protocol</h3>
+                        <p>${insight}</p>
+                        
+                        <p><strong>Primary Recommendation:</strong> Magnesium Glycinate 200mg</p>
+                        <p><strong>When:</strong> 30 minutes before bed</p>
+                        <p><strong>Why this form:</strong> Highly bioavailable, gentle on stomach, supports sleep and stress</p>
+                        
+                        <div style="margin: 15px 0;">
+                            <strong>Evidence Strength:</strong>
+                            <div class="evidence-bar">
+                                <div class="evidence-fill" style="width: 85%"></div>
+                            </div>
+                            <small>Based on multiple clinical studies</small>
                         </div>
-                    ` : ''}
-                    
-                    <div style="background: #fff5f5; padding: 12px; border-radius: 8px; margin: 10px 0;">
-                        <strong>🎯 Implementation Tip:</strong> Place the bottle next to your toothbrush so you remember to take it as part of your bedtime routine.
+                        
+                        ${profileType === 'science_seeker' ? `
+                            <div style="background: #e6fffa; padding: 12px; border-radius: 8px; margin: 10px 0;">
+                                <strong>🎓 The Science:</strong> Magnesium regulates GABA neurotransmitter function and supports healthy cortisol rhythm. Studies show 200-400mg improves sleep latency by 15-20% within 5-7 days (Abbasi et al., 2012).
+                            </div>
+                        ` : ''}
+                        
+                        <div style="background: #fff5f5; padding: 12px; border-radius: 8px; margin: 10px 0;">
+                            <strong>🎯 Implementation Tip:</strong> Place the bottle next to your toothbrush so you remember to take it as part of your bedtime routine.
+                        </div>
                     </div>
-                    
-                    <div style="background: #f0f8ff; padding: 12px; border-radius: 8px; margin: 10px 0;">
-                        <strong>📅 Week 2 Addition:</strong> B-Complex for energy support (timing adjusted for your needs)
-                        <br><strong>📅 Week 3 Addition:</strong> Omega-3 for brain and mood support
-                    </div>
-                </div>
-            `;
+                `;
+            }
             
             document.getElementById('recommendationResults').innerHTML = recommendationHTML;
         }
@@ -1510,8 +1467,8 @@ Contact Julia & Lars at Happy Longevity!`);
             document.getElementById('whatsappMessages').innerHTML = messages;
         }
 
-        function getProfileMessages(profileType, hasSevereSymptoms) {
-            if (hasSevereSymptoms) {
+        function getProfileMessages(profileType, hasSafetyRisk) {
+            if (hasSafetyRisk) {
                 return `
                     <div class="whatsapp-message">Good morning! How did you sleep? Let's focus on building your sleep foundation with simple techniques.</div>
                     <div class="whatsapp-message">Gentle reminder: Try the 4-7-8 breathing technique before bed tonight.</div>
@@ -1541,7 +1498,7 @@ Contact Julia & Lars at Happy Longevity!`);
                     <div class="whatsapp-message">Loving your flexible approach! What tiny win feels doable for you today?</div>
                 `,
                 systematic_follower: `
-                    <div class="whatsapp-message">Good morning! Step 1 complete: How did you sleep? Today's checklist: ✓ Morning B-complex ✓ Magnesium tonight</div>
+                    <div class="whatsapp-message">Good morning! Step 1 complete: How did you sleep? Today's checklist: ✓ Morning protein ✓ Magnesium tonight</div>
                     <div class="whatsapp-message">Week 1 Protocol Status: Sleep foundation in progress. Week 2 Addition: B-complex with breakfast. Clear?</div>
                     <div class="whatsapp-message">System check: You're 85% consistent with Phase 1. Ready for Phase 2 implementation?</div>
                 `
