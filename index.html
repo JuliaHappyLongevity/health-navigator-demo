@@ -139,6 +139,7 @@
             cursor: pointer;
             transition: transform 0.2s;
             margin: 8px;
+            display: inline-block;
         }
 
         .btn:hover {
@@ -159,6 +160,14 @@
         .btn-small {
             padding: 8px 16px;
             font-size: 12px;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .path-selector {
@@ -222,6 +231,11 @@
             transition: all 0.3s;
             font-weight: 600;
             font-size: 10px;
+            line-height: 1.2;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .scale-option input[type="radio"]:checked + label {
@@ -254,6 +268,11 @@
             background: #f8fafc;
         }
 
+        .checkbox-item.selected {
+            border-color: #4a90a4;
+            background: #e6f7ff;
+        }
+
         .checkbox-item input[type="checkbox"]:checked + span,
         .checkbox-item input[type="radio"]:checked + span {
             color: #4a90a4;
@@ -264,13 +283,44 @@
         .checkbox-item input[type="radio"] {
             margin-right: 12px;
             margin-top: 2px;
-            transform: scale(1.1);
             flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
         .checkbox-item span {
             font-size: 13px;
             line-height: 1.4;
+            flex: 1;
+        }
+
+        /* Safety check styling */
+        .safety-check-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .safety-check-item:hover {
+            border-color: #4a90a4;
+            background: #f8fafc;
+        }
+
+        .safety-check-item input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .safety-check-item span {
+            font-size: 13px;
+            flex: 1;
         }
 
         .behavioral-profile {
@@ -493,6 +543,42 @@
             color: #718096;
         }
 
+        /* Lab result input styling */
+        .lab-input-row {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .lab-input-row:hover {
+            border-color: #4a90a4;
+            background: #f8fafc;
+        }
+
+        .lab-input-row input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .lab-input-row span {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .lab-input-row input[type="number"] {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
         @media (max-width: 480px) {
             .container {
                 width: 95%;
@@ -517,8 +603,23 @@
                 gap: 5px;
             }
 
+            .scale-option label {
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+
             .metrics-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+                margin: 4px 0;
             }
         }
 
@@ -531,6 +632,11 @@
             font-size: 12px;
             text-align: left;
             color: #744210;
+        }
+
+        .demo-notice strong {
+            display: block;
+            margin-bottom: 4px;
         }
     </style>
 </head>
@@ -667,56 +773,56 @@
             
             <div class="input-group">
                 <label>Do you have any of these conditions? (helps me adjust dosages safely)</label>
-                <div style="display: grid; gap: 8px;">
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="heart" id="safety1" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('conditions', this)">
-                        <span style="font-size: 13px;">Heart condition or taking heart medications</span>
+                <div class="checkbox-group">
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="heart" id="safety1" onchange="handleSafetySelection('conditions', this)">
+                        <span>Heart condition or taking heart medications</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="kidney" id="safety2" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('conditions', this)">
-                        <span style="font-size: 13px;">Kidney disease or history of kidney stones</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="kidney" id="safety2" onchange="handleSafetySelection('conditions', this)">
+                        <span>Kidney disease or history of kidney stones</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="diabetes" id="safety3" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('conditions', this)">
-                        <span style="font-size: 13px;">Diabetes or taking diabetes medications</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="diabetes" id="safety3" onchange="handleSafetySelection('conditions', this)">
+                        <span>Diabetes or taking diabetes medications</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="blood_thinners" id="safety4" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('conditions', this)">
-                        <span style="font-size: 13px;">Taking blood thinners (warfarin, etc.)</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="blood_thinners" id="safety4" onchange="handleSafetySelection('conditions', this)">
+                        <span>Taking blood thinners (warfarin, etc.)</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="pregnancy" id="safety5" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('conditions', this)">
-                        <span style="font-size: 13px;">Currently pregnant or trying to conceive</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="pregnancy" id="safety5" onchange="handleSafetySelection('conditions', this)">
+                        <span>Currently pregnant or trying to conceive</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="none" id="safety6" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('conditions', this)">
-                        <span style="font-size: 13px;"><strong>None of the above</strong></span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="none" id="safety6" onchange="handleSafetySelection('conditions', this)">
+                        <span><strong>None of the above</strong></span>
                     </div>
                 </div>
             </div>
             
             <div class="input-group">
                 <label>Any concerning symptoms recently?</label>
-                <div style="display: grid; gap: 8px;">
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="weight_loss" id="symptom1" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('symptoms', this)">
-                        <span style="font-size: 13px;">Unexplained weight loss >5kg in 3 months</span>
+                <div class="checkbox-group">
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="weight_loss" id="symptom1" onchange="handleSafetySelection('symptoms', this)">
+                        <span>Unexplained weight loss >5kg in 3 months</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="chest_pain" id="symptom2" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('symptoms', this)">
-                        <span style="font-size: 13px;">Chest pain or heart palpitations with fatigue</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="chest_pain" id="symptom2" onchange="handleSafetySelection('symptoms', this)">
+                        <span>Chest pain or heart palpitations with fatigue</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="severe_mood" id="symptom3" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('symptoms', this)">
-                        <span style="font-size: 13px;">Severe mood changes with fatigue</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="severe_mood" id="symptom3" onchange="handleSafetySelection('symptoms', this)">
+                        <span>Severe mood changes with fatigue</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="fainting" id="symptom4" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('symptoms', this)">
-                        <span style="font-size: 13px;">Fainting or severe dizziness</span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="fainting" id="symptom4" onchange="handleSafetySelection('symptoms', this)">
+                        <span>Fainting or severe dizziness</span>
                     </div>
-                    <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <input type="checkbox" value="none_symptoms" id="symptom5" style="margin-right: 8px; transform: scale(1.0);" onchange="handleSafetySelection('symptoms', this)">
-                        <span style="font-size: 13px;"><strong>None of these apply</strong></span>
+                    <div class="safety-check-item">
+                        <input type="checkbox" value="none_symptoms" id="symptom5" onchange="handleSafetySelection('symptoms', this)">
+                        <span><strong>None of these apply</strong></span>
                     </div>
                 </div>
             </div>
@@ -864,7 +970,7 @@
                 <strong>💡 Demo Complete!</strong> In the real system, you'd now connect to WhatsApp for daily support, access your health dashboard, and begin your personalized supplement protocol with ongoing AI guidance.
             </div>
             
-            <div style="margin-top: 20px;">
+            <div class="btn-group">
                 <button class="btn" onclick="restartDemo()">Try Different Path</button>
                 <button class="btn btn-secondary" onclick="showPricing()">View Pricing</button>
             </div>
@@ -1039,26 +1145,26 @@
                 document.getElementById('dataContent').innerHTML = `
                     <div class="input-group">
                         <label>Recent lab results (if available):</label>
-                        <div style="display: grid; gap: 12px;">
-                            <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <input type="checkbox" value="vitamin_d" style="margin-right: 8px; transform: scale(1.0);">
-                                <span style="flex: 1;">Vitamin D:</span>
-                                <input type="number" placeholder="nmol/L" style="width: 80px; padding: 4px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                        <div class="checkbox-group">
+                            <div class="lab-input-row">
+                                <input type="checkbox" value="vitamin_d">
+                                <span>Vitamin D:</span>
+                                <input type="number" placeholder="nmol/L">
                             </div>
-                            <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <input type="checkbox" value="b12" style="margin-right: 8px; transform: scale(1.0);">
-                                <span style="flex: 1;">B12:</span>
-                                <input type="number" placeholder="pmol/L" style="width: 80px; padding: 4px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                            <div class="lab-input-row">
+                                <input type="checkbox" value="b12">
+                                <span>B12:</span>
+                                <input type="number" placeholder="pmol/L">
                             </div>
-                            <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <input type="checkbox" value="glucose" style="margin-right: 8px; transform: scale(1.0);">
-                                <span style="flex: 1;">Fasting Glucose:</span>
-                                <input type="number" placeholder="mmol/L" style="width: 80px; padding: 4px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                            <div class="lab-input-row">
+                                <input type="checkbox" value="glucose">
+                                <span>Fasting Glucose:</span>
+                                <input type="number" placeholder="mmol/L">
                             </div>
-                            <div style="display: flex; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <input type="checkbox" value="thyroid" style="margin-right: 8px; transform: scale(1.0);">
-                                <span style="flex: 1;">TSH:</span>
-                                <input type="number" placeholder="mIU/L" style="width: 80px; padding: 4px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                            <div class="lab-input-row">
+                                <input type="checkbox" value="thyroid">
+                                <span>TSH:</span>
+                                <input type="number" placeholder="mIU/L">
                             </div>
                         </div>
                     </div>
@@ -1127,23 +1233,23 @@
                         <div class="scale-group">
                             <div class="scale-option">
                                 <input type="radio" name="sleep_quality" value="1">
-                                <label>Very poor</label>
+                                <label for="sleep_quality_1">Very poor</label>
                             </div>
                             <div class="scale-option">
                                 <input type="radio" name="sleep_quality" value="2">
-                                <label>Poor</label>
+                                <label for="sleep_quality_2">Poor</label>
                             </div>
                             <div class="scale-option">
                                 <input type="radio" name="sleep_quality" value="3">
-                                <label>Fair</label>
+                                <label for="sleep_quality_3">Fair</label>
                             </div>
                             <div class="scale-option">
                                 <input type="radio" name="sleep_quality" value="4">
-                                <label>Good</label>
+                                <label for="sleep_quality_4">Good</label>
                             </div>
                             <div class="scale-option">
                                 <input type="radio" name="sleep_quality" value="5">
-                                <label>Excellent</label>
+                                <label for="sleep_quality_5">Excellent</label>
                             </div>
                         </div>
                     </div>
@@ -1151,8 +1257,38 @@
             }
         }
 
+        function handleSafetySelection(category, checkbox) {
+            if (category === 'conditions' && checkbox.value === 'none') {
+                if (checkbox.checked) {
+                    // Uncheck all other condition checkboxes
+                    document.querySelectorAll('#stage5 input[type="checkbox"][value!="none"]').forEach(cb => {
+                        if (cb.id.startsWith('safety')) {
+                            cb.checked = false;
+                        }
+                    });
+                }
+            } else if (category === 'conditions' && checkbox.value !== 'none') {
+                // Uncheck "none" if any condition is selected
+                document.getElementById('safety6').checked = false;
+            }
+            
+            if (category === 'symptoms' && checkbox.value === 'none_symptoms') {
+                if (checkbox.checked) {
+                    // Uncheck all other symptom checkboxes
+                    document.querySelectorAll('#stage5 input[type="checkbox"][value!="none_symptoms"]').forEach(cb => {
+                        if (cb.id.startsWith('symptom')) {
+                            cb.checked = false;
+                        }
+                    });
+                }
+            } else if (category === 'symptoms' && checkbox.value !== 'none_symptoms') {
+                // Uncheck "none" if any symptom is selected
+                document.getElementById('symptom5').checked = false;
+            }
+        }
+
         function processSafetyScreen() {
-            document.querySelector('.btn').style.display = 'none';
+            document.querySelector('#stage5 .btn').style.display = 'none';
             document.getElementById('loadingSafety').style.display = 'block';
             
             // Check for safety flags
@@ -1328,23 +1464,17 @@
         }
 
         function showAlternativeProfiles() {
-            let alternativeHTML = '<h2>Other Behavioral Profiles</h2>';
+            let alternativeHTML = '<h2>Other Behavioral Profiles</h2>\n\n';
             
             Object.entries(behavioralProfiles).forEach(([key, profile]) => {
                 if (key !== userProfile.behavioralProfile) {
-                    alternativeHTML += `
-                        <div class="recommendation-card" style="margin: 10px 0;">
-                            <h3>${profile.badge} ${profile.title}</h3>
-                            <p style="font-size: 12px;">${profile.description}</p>
-                            <div style="text-align: center; margin-top: 8px;">
-                                <span style="font-weight: bold; color: #4a90a4;">${profile.successRate} success rate</span>
-                            </div>
-                        </div>
-                    `;
+                    alternativeHTML += `${profile.badge} ${profile.title}\n`;
+                    alternativeHTML += `${profile.description}\n`;
+                    alternativeHTML += `Success rate: ${profile.successRate}\n\n`;
                 }
             });
             
-            alert(alternativeHTML.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n'));
+            alert(alternativeHTML);
         }
 
         function restartDemo() {
@@ -1379,6 +1509,7 @@
             document.getElementById('pathDescription').innerHTML = '';
             document.getElementById('continueBtn').style.display = 'none';
             document.getElementById('loadingSafety').style.display = 'none';
+            document.querySelector('.container').scrollTop = 0;
         }
 
         function showPricing() {
@@ -1403,11 +1534,6 @@ Path 3 - 3-Month Deep Dive:
 Ready to transform your energy? 
 Contact Julia & Lars at Happy Longevity!`);
         }
-
-        // Populate Stage 8 when reached
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgress();
-        });
 
         // Update stage 8 content when reached
         function populateStage8() {
@@ -1510,14 +1636,16 @@ Contact Julia & Lars at Happy Longevity!`);
         // Monitor stage changes to populate content
         const originalNextStage = nextStage;
         nextStage = function() {
-            const result = originalNextStage.call(this);
+            originalNextStage.call(this);
             if (currentStage === 8) {
                 populateStage8();
             }
-            return result;
         };
 
-        updateProgress();
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+        });
     </script>
 </body>
 </html>
